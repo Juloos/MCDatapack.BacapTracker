@@ -1,0 +1,84 @@
+{
+    "Tabs": {
+        "total": "Total",
+        "adventure": "Adventure",
+        "animal": "Animal",
+        "bacap": "Milestones",
+        "beginning": "Beginning",
+        "biomes": "Biomes",
+        "building": "Building",
+        "challenges": "Challenges",
+        "combat": "Combat",
+        "enchanting": "Enchanting",
+        "end": "End",
+        "farming": "Farming",
+        "mining": "Mining",
+        "monsters": "Monsters",
+        "nether": "Nether",
+        "potion": "Potion",
+        "redstone": "Redstone",
+        "statistics": "Statistics",
+        "weaponry": "Weaponry"
+    },
+
+    "Pinned tabs": [
+        "total",
+        "bacap"
+    ],
+
+    "Sidebar": {
+        "Progress bar": {
+            "length": 40
+        },
+
+        "Tab count per page": 0,
+        "Page count": 0,
+
+        "Fallback": {
+            "Tab count per page": 5
+        },
+
+        "Use custom pages": false,
+        "Pages": [
+            [
+                "BLANK",
+                "total",
+                "bacap",
+                "BLANK",
+                "adventure",
+                "animal",
+                "beginning",
+                "biomes",
+                "building",
+                "BLANK",
+                "PAGE_INFO"
+            ],
+            [
+                "BLANK",
+                "total",
+                "bacap",
+                "BLANK",
+                "challenges",
+                "end",
+                "farming",
+                "mining",
+                "monsters",
+                "BLANK",
+                "PAGE_INFO"
+            ],
+            [
+                "BLANK",
+                "total",
+                "bacap",
+                "BLANK",
+                "nether",
+                "potion",
+                "redstone",
+                "statistics",
+                "weaponry",
+                "BLANK",
+                "PAGE_INFO"
+            ]
+        ]
+    }
+}

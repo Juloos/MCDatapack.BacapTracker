@@ -1,9 +1,12 @@
 import json
 import zipfile
 import glob
-from math import floor, ceil
+from math import ceil
 import sys
 import os
+
+
+CONFIG = json.load(open("config.json", "r"))
 
 
 def get_progress_update_function(nb_tasks):
@@ -29,39 +32,22 @@ def get_blank_function():
     return blank_function
 
 
-def find_best_count(key_count, slot_count, page_count):
-    couple = (0, page_count)
-    for p in range(1, page_count + 1):
+def find_best_count(key_count, slot_count):
+    couple = (max(CONFIG['Sidebar']['Tab count per page'], 0), max(CONFIG['Sidebar']['Page count'], 0))
+    if 0 not in couple and couple[0] * couple[1] >= key_count:
+        return couple
+    if not couple[0] and couple[1] >= ceil(key_count / slot_count):
+        return (ceil(key_count / couple[1]), couple[1])
+    if couple[0] and not couple[1]:
+        return (couple[0], ceil(key_count / couple[0]))
+    for p in range(1, key_count + 1):
         for s in range(1, slot_count + 1):
             if s * p == key_count and abs(s - p) < abs(couple[0] - couple[1]):
                 couple = (s, p)
-    if couple == (0, page_count):
-        couple = (None, ceil(key_count / slot_count))
+    if couple == (0, key_count):
+        couple = (max(CONFIG['Sidebar']['Fallback']['Tab count per page'], 1), ceil(key_count / slot_count))
     return couple
 
-
-# All the up-to-now known categories that are in BACAP (+ "total")
-KEY2NAME = {
-    "total": "Total",
-    "adventure": "Adventure",
-    "animal": "Animal",
-    "bacap": "BlazeandCave",
-    "beginning": "Beginning",
-    "biomes": "Biomes",
-    "building": "Building",
-    "challenges": "Challenges",
-    "combat": "Combat",
-    "enchanting": "Enchanting",
-    "end": "End",
-    "farming": "Farming",
-    "mining": "Mining",
-    "monsters": "Monsters",
-    "nether": "Nether",
-    "potion": "Potion",
-    "redstone": "Redstone",
-    "statistics": "Statistics",
-    "weaponry": "Weaponry"
-}
 
 PACK_FORMAT = 4  # pack format compatibility with BACAP & MC starts at the 1.13.2 release
 FUNCTIONS_PATH = "data/bac_tracker/functions"
@@ -82,7 +68,7 @@ except FileNotFoundError:
     print("File not found. Please check your path.")
     input("Press Enter to exit.\n")
     exit(1)
-NB_BAR = int((input("Number of bars in the scoreboard title (default is 40)\n> ") or 40) if len(sys.argv) < 3 else sys.argv[2])
+NB_BAR = CONFIG['Sidebar']['Progress bar']['length']
 
 print(f"\nExctracting data from BACAP (pack format {PACK_FORMAT})...")
 AA = list()
@@ -125,16 +111,21 @@ if BACAP_ZIP is not None:
 
 DATA_SUM = {key: len(value) for key, value in DATA.items()}
 DATA_SUM['total'] = sum(DATA_SUM.values())
-PINNED_KEYS = ("total", "bacap")
-OTHER_KEYS = sorted(set(DATA_SUM.keys()).difference(PINNED_KEYS))
-PINNED_KEYS = sorted(set(PINNED_KEYS).intersection(DATA_SUM.keys()), key=lambda k: PINNED_KEYS.index(k))
-SLOT_COUNT = 15 - (3 + 1 + len(PINNED_KEYS))
-KEY_COUNT, PAGE_COUNT = find_best_count(len(OTHER_KEYS), SLOT_COUNT, 5)  # 5 is the max number of pages
-KEY_COUNT = KEY_COUNT or 5
+if not CONFIG['Sidebar']['Use custom pages']:
+    PINNED_KEYS = CONFIG['Pinned tabs']
+    TABS_KEYS = sorted(set(DATA_SUM.keys()).difference(PINNED_KEYS))
+    PINNED_KEYS = sorted(set(PINNED_KEYS).intersection(DATA_SUM.keys()), key=lambda k: PINNED_KEYS.index(k))
+    SLOT_COUNT = 15 - (3 + 1 + len(PINNED_KEYS))
+    KEY_COUNT, PAGE_COUNT = find_best_count(len(TABS_KEYS), SLOT_COUNT)
+    tabs_keys = TABS_KEYS.copy()
+else:
+    TABS_KEYS = [val for page in CONFIG['Sidebar']['Pages'] for val in page]
+    KEY_COUNT = sum(1 for val in TABS_KEYS if val not in ('BLANK', 'PAGE_INFO'))
+    PAGE_COUNT = len(CONFIG['Sidebar']['Pages'])
 
 
 print("\nGenerating datapack...")
-UPDATE_PROGRESS = get_progress_update_function(1 + NB_ADV + 1 + len(OTHER_KEYS) + 1 + 2 * (len(DATA_SUM) + 1))
+UPDATE_PROGRESS = get_progress_update_function(1 + 1 + NB_ADV + 1 + len(TABS_KEYS) + 1 + 2 * (len(DATA_SUM) + 1))
 UPDATE_PROGRESS()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -146,10 +137,29 @@ with open("pack.mcmeta", "w") as packmeta:
 UPDATE_PROGRESS()
 
 
+SETUPF_C = 'scoreboard objectives add bac_tracker.%s dummy\n' + \
+           'team add bac_tracker.%s\n'                        + \
+           'team modify bac_tracker.%s prefix [" "," "]\n'    + \
+           'team modify bac_tracker.%s color white\n'         + \
+           'team join bac_tracker.%s %s\n'
+with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "r") as setupf:
+    setup = setupf.readlines()
+    i = 0
+    while setup[i] != "###\n":
+        i += 1
+    i = j = i + 1
+    while setup[j] != "###\n":
+        j += 1
+    setup = setup[:i] + ['\n'.join(SETUPF_C % (key, key, key, key, key, CONFIG['Tabs'][key]) for key in DATA_SUM.keys())] + setup[j:]
+with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "w") as setupf:
+    setupf.write(''.join(setup))
+UPDATE_PROGRESS()
+
+
 PROGRESSF_C = 'execute if score @p bac_tracker.total matches %s run scoreboard objectives modify bac_tracker.progress_score displayname [" "," "," ","[",{"text":"%s","color":"green"},{"text":"%s","color":"gray"},"]",{"text":" - ","color":"gray"},{"text":"%s%%","color":"light_purple"}," "," "," "]\n'
 with open(f"{FUNCTIONS_PATH}/display/progress_bar.mcfunction", "w") as progressf:
     for i in range(NB_ADV + 1):
-        nb_greens = floor(i * NB_BAR / NB_ADV)
+        nb_greens = i * NB_BAR // NB_ADV
         nb_grays = NB_BAR - nb_greens
         progressf.write(
             PROGRESSF_C % (
@@ -163,23 +173,41 @@ with open(f"{FUNCTIONS_PATH}/display/progress_bar.mcfunction", "w") as progressf
 
 PAGESF_C1 = 'team modify bac_tracker.page prefix [%s,{"text":"Page %d of %d","color":"gray","italic":true}]\n\n'
 PAGESF_C2 = 'scoreboard players set %s bac_tracker.progress_score %d\n'
-other_keys = OTHER_KEYS.copy()
+for filename in glob.glob(f"{FUNCTIONS_PATH}/display/page/*.mcfunction"):
+    os.remove(filename)  # Would break if re-generating with lesser page count
 for page in range(1, PAGE_COUNT + 1):
     blank = get_blank_function()
     sidebar = list()
-    sidebar.append(blank())
-    sidebar += [KEY2NAME[key] for key in PINNED_KEYS]
-    sidebar.append(blank())
-    for i in range(1, KEY_COUNT + 1):  # if None is given, place 5 keys per page by defaut
-        if other_keys:
-            sidebar.append(KEY2NAME[other_keys.pop(0)])
+    if CONFIG['Sidebar']['Use custom pages']:
+        if CONFIG['Sidebar']['Pages'][page - 1].count('PAGE_INFO') > 1:
+            err = print() or "A page can't have more than one PAGE_INFO key."
+            raise ValueError(err)
+        if len(CONFIG['Sidebar']['Pages'][page - 1]) > 15:
+            err = print() or "A page can't have more than 15 keys."
+            raise ValueError(err)
+        for key in CONFIG['Sidebar']['Pages'][page - 1]:
+            match key:
+                case 'BLANK':
+                    sidebar.append(blank())
+                case 'PAGE_INFO':
+                    sidebar.append("\u00A7p")
+                case _:
+                    sidebar.append(CONFIG['Tabs'][key])
             UPDATE_PROGRESS()
-        else:
-            break
-    sidebar.append(blank())
-    sidebar.append("\u00A7p")
+    else:
+        sidebar.append(blank())
+        sidebar += [CONFIG['Tabs'][key] for key in PINNED_KEYS]
+        sidebar.append(blank())
+        for i in range(1, KEY_COUNT + 1):
+            if tabs_keys:
+                sidebar.append(CONFIG['Tabs'][tabs_keys.pop(0)])
+                UPDATE_PROGRESS()
+            else:
+                break
+        sidebar.append(blank())
+        sidebar.append("\u00A7p")
     sidebar.reverse()
-    with open(f"{FUNCTIONS_PATH}/display/page_{page}.mcfunction", "w", encoding="utf-8") as pagef:
+    with open(f"{FUNCTIONS_PATH}/display/page/{page}.mcfunction", "w", encoding="utf-8") as pagef:
         pagef.write(PAGESF_C1 % (','.join(['" "'] * (ceil(NB_BAR / 2) - 2)), page, PAGE_COUNT))
         for i in range(len(sidebar) - 1, -1, -1):
             pagef.write(PAGESF_C2 % (sidebar[i], i))
@@ -251,4 +279,4 @@ for filename in files:
     UPDATE_PROGRESS()
 
 
-input("\nPress Enter to exit.\n")
+input("\nDone!\nPress Enter to exit.\n")
