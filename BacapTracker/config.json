@@ -21,15 +21,15 @@
         "weaponry": "Weaponry"
     },
 
-    "Pinned tabs": [
-        "total",
-        "bacap"
-    ],
-
     "Sidebar": {
         "Progress bar": {
             "length": 40
         },
+
+        "Pinned tabs": [
+            "total",
+            "bacap"
+        ],
 
         "Tab count per page": 0,
         "Page count": 0,

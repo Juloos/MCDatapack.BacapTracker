@@ -112,7 +112,7 @@ if BACAP_ZIP is not None:
 DATA_SUM = {key: len(value) for key, value in DATA.items()}
 DATA_SUM['total'] = sum(DATA_SUM.values())
 if not CONFIG['Sidebar']['Use custom pages']:
-    PINNED_KEYS = CONFIG['Pinned tabs']
+    PINNED_KEYS = CONFIG['Sidebar']['Pinned tabs']
     TABS_KEYS = sorted(set(DATA_SUM.keys()).difference(PINNED_KEYS))
     PINNED_KEYS = sorted(set(PINNED_KEYS).intersection(DATA_SUM.keys()), key=lambda k: PINNED_KEYS.index(k))
     SLOT_COUNT = 15 - (3 + 1 + len(PINNED_KEYS))
