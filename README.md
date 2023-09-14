@@ -1,7 +1,7 @@
 # MCDatapack.BacapTracker
 A generic Minecraft Datapack for tracking BlazeandCave's Advancements Pack (BACAP) with a fancy Scoreboard.
 
-For Minecraft 1.13 to 1.20 and more, multiple teams and Terralith version of BACAP are not supported.
+For Minecraft 1.13 to 1.20 and more, non-Cooperative Mode in multiplayer and Terralith version of BACAP are not supported.
 
 # Installation
 See [this tutorial](https://minecraft.fandom.com/wiki/Tutorials/Installing_a_data_pack) for installing the datapack to your minecraft world.
@@ -16,7 +16,7 @@ If downloaded from source code, you need to generate the datapack using the incl
 
 The path must lead to a BACAP datapack directory or zip file, both ways must be the direct parent of `data` inside BACAP.
 
-If no path is provided, the script will ask for it interactively. Dragging the file onto `generate.py` in Windows will have the same effect.
+Dragging the file onto `generate.py` in Windows will have the same effect. If no path is provided, the script will ask for it interactively.
 
 # Configuration
 The Python script uses a [configuration file](BacapTracker/config.json) to allow customization of the generated datapack. Here is a list of the available options and their meaning:
