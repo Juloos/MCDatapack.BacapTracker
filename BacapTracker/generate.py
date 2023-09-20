@@ -5,22 +5,33 @@ from math import ceil
 import sys
 import os
 
+PATH = os.path.dirname(os.path.abspath(__file__))
+CONFIG = json.load(open(f"{PATH}/config.json", "r"))
 
-CONFIG = json.load(open("config.json", "r"))
+# Config validation
+err = None
+if CONFIG['Sidebar']['Use custom pages']:
+    for page in range(len(CONFIG['Sidebar']['Pages'])):
+        if CONFIG['Sidebar']['Pages'][page].count('PAGE_INFO') > 1:
+            err = f"Page {page + 1} have more than one PAGE_INFO key"
+        if len(CONFIG['Sidebar']['Pages'][page]) > 15:
+            err = f"Page {page + 1} have more than 15 keys"
+
+if err is not None:
+    raise ValueError(err)
 
 
-def get_progress_update_function(nb_tasks):
+class Progress:
     current_task = -1
-    def progress_update_function():
-        nonlocal current_task
-        current_task += 1
-        if current_task == nb_tasks:
-            print("\r ", nb_tasks, '/', nb_tasks)
-        elif current_task < nb_tasks:
-            print("\r ", current_task, '/', nb_tasks, end='')
-        else:
-            print("\nToo many tasks.")
-    return progress_update_function
+    nb_tasks: int
+    def __init__(self, nb_tasks):
+        self.nb_tasks = nb_tasks
+        self()
+    def __call__(self):
+        self.current_task += 1
+        print("\r ", "[-]" if self.current_task <= self.nb_tasks else "[!]", self.current_task, '/', self.nb_tasks, end='')
+    def validate(self):
+        print("\r ", "[✓]" if self.current_task == self.nb_tasks else "[!]", self.current_task, '/', self.nb_tasks)
 
 
 def get_blank_function():
@@ -36,10 +47,12 @@ def find_best_count(key_count, slot_count):
     couple = (max(CONFIG['Sidebar']['Tab count per page'], 0), max(CONFIG['Sidebar']['Page count'], 0))
     if 0 not in couple and couple[0] * couple[1] >= key_count:
         return couple
-    if not couple[0] and couple[1] >= ceil(key_count / slot_count):
+    if couple[0] == 0 and couple[1] >= ceil(key_count / slot_count):
         return (ceil(key_count / couple[1]), couple[1])
-    if couple[0] and not couple[1]:
+    if couple[0] > 0 and couple[1] == 0:
         return (couple[0], ceil(key_count / couple[0]))
+    if couple == (0, 0):
+        couple[1] = CONFIG['Sidebar']['Fallback']['Max page count']
     for p in range(1, key_count + 1):
         for s in range(1, slot_count + 1):
             if s * p == key_count and abs(s - p) < abs(couple[0] - couple[1]):
@@ -50,7 +63,7 @@ def find_best_count(key_count, slot_count):
 
 
 PACK_FORMAT = 4  # pack format compatibility with BACAP & MC starts at the 1.13.2 release
-FUNCTIONS_PATH = "data/bac_tracker/functions"
+FUNCTIONS_PATH = f"{PATH}/data/bac_tracker/functions"
 BACAP_PATH = (input("Enter the path to a BACAP folder or zip\n> ") if len(sys.argv) < 2 else sys.argv[1]).replace('\\', '/').removesuffix('/')
 BACAP_ZIP = None
 if BACAP_PATH.endswith(".zip"):
@@ -82,8 +95,7 @@ aafile.close()
 
 DATA = dict()
 NB_ADV = len(AA)
-UPDATE_PROGRESS = get_progress_update_function(NB_ADV)
-UPDATE_PROGRESS()
+UPDATE_PROGRESS = Progress(NB_ADV)
 for advancement in AA:
     current = advancement
     while not current.startswith("blazeandcave:"):
@@ -105,6 +117,7 @@ for advancement in AA:
         DATA[category] = list()
     DATA[category].append(advancement)
     UPDATE_PROGRESS()
+UPDATE_PROGRESS.validate()
 
 if BACAP_ZIP is not None:
     BACAP_ZIP.close()
@@ -120,19 +133,17 @@ if not CONFIG['Sidebar']['Use custom pages']:
     tabs_keys = TABS_KEYS.copy()
 else:
     TABS_KEYS = [val for page in CONFIG['Sidebar']['Pages'] for val in page]
-    KEY_COUNT = sum(1 for val in TABS_KEYS if val not in ('BLANK', 'PAGE_INFO'))
     PAGE_COUNT = len(CONFIG['Sidebar']['Pages'])
 
 
 print("\nGenerating datapack...")
-UPDATE_PROGRESS = get_progress_update_function(1 + 1 + NB_ADV + 1 + len(TABS_KEYS) + 1 + 2 * (len(DATA_SUM) + 1))
-UPDATE_PROGRESS()
+UPDATE_PROGRESS = Progress(1 + 1 + (NB_ADV + 1) + len(TABS_KEYS) + 1 + 2 * (len(DATA_SUM) + 1))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-with open("pack.mcmeta", "r") as packmeta:
+with open(f"{PATH}/pack.mcmeta", "r") as packmeta:
     packjson = json.load(packmeta)
 packjson["pack"]["pack_format"] = PACK_FORMAT
-with open("pack.mcmeta", "w") as packmeta:
+with open(f"{PATH}/pack.mcmeta", "w") as packmeta:
     json.dump(packjson, packmeta, indent=2)
 UPDATE_PROGRESS()
 
@@ -175,17 +186,11 @@ PAGESF_C1 = 'team modify bac_tracker.page prefix [%s,{"text":"Page %d of %d","co
 PAGESF_C2 = 'scoreboard players set %s bac_tracker.progress_score %d\n'
 for filename in glob.glob(f"{FUNCTIONS_PATH}/display/page/*.mcfunction"):
     os.remove(filename)  # Would break if re-generating with lesser page count
-for page in range(1, PAGE_COUNT + 1):
+for page in range(PAGE_COUNT):
     blank = get_blank_function()
     sidebar = list()
     if CONFIG['Sidebar']['Use custom pages']:
-        if CONFIG['Sidebar']['Pages'][page - 1].count('PAGE_INFO') > 1:
-            err = print() or "A page can't have more than one PAGE_INFO key."
-            raise ValueError(err)
-        if len(CONFIG['Sidebar']['Pages'][page - 1]) > 15:
-            err = print() or "A page can't have more than 15 keys."
-            raise ValueError(err)
-        for key in CONFIG['Sidebar']['Pages'][page - 1]:
+        for key in CONFIG['Sidebar']['Pages'][page]:
             match key:
                 case 'BLANK':
                     sidebar.append(blank())
@@ -198,7 +203,7 @@ for page in range(1, PAGE_COUNT + 1):
         sidebar.append(blank())
         sidebar += [CONFIG['Tabs'][key] for key in PINNED_KEYS]
         sidebar.append(blank())
-        for i in range(1, KEY_COUNT + 1):
+        for _ in range(KEY_COUNT):
             if tabs_keys:
                 sidebar.append(CONFIG['Tabs'][tabs_keys.pop(0)])
                 UPDATE_PROGRESS()
@@ -207,8 +212,8 @@ for page in range(1, PAGE_COUNT + 1):
         sidebar.append(blank())
         sidebar.append("\u00A7p")
     sidebar.reverse()
-    with open(f"{FUNCTIONS_PATH}/display/page/{page}.mcfunction", "w", encoding="utf-8") as pagef:
-        pagef.write(PAGESF_C1 % (','.join(['" "'] * (ceil(NB_BAR / 2) - 2)), page, PAGE_COUNT))
+    with open(f"{FUNCTIONS_PATH}/display/page/{page + 1}.mcfunction", "w", encoding="utf-8") as pagef:
+        pagef.write(PAGESF_C1 % (','.join(['" "'] * (ceil(NB_BAR / 2) - 2)), page + 1, PAGE_COUNT))
         for i in range(len(sidebar) - 1, -1, -1):
             pagef.write(PAGESF_C2 % (sidebar[i], i))
 
@@ -259,6 +264,7 @@ with open(f"{FUNCTIONS_PATH}/refresh_adv_counts/all.mcfunction", "w") as allf:
             UPDATE_PROGRESS()
     allf.write(ALLF_C2)
 UPDATE_PROGRESS()
+UPDATE_PROGRESS.validate()
 
 
 if PACK_FORMAT >= 8:
@@ -268,8 +274,7 @@ if PACK_FORMAT >= 8:
 
 print("\nModifying datapack for pre-1.18 compatibility...")
 files = glob.glob(f"{FUNCTIONS_PATH}/**/*.mcfunction", recursive=True)
-UPDATE_PROGRESS = get_progress_update_function(len(files))
-UPDATE_PROGRESS()
+UPDATE_PROGRESS = Progress(len(files))
 for filename in files:
     filename = filename.replace('\\', '/')
     with open(filename, "r") as file:
@@ -277,6 +282,7 @@ for filename in files:
     with open(filename, "w") as file:
         file.write(content.replace("bac_tracker.", ''))
     UPDATE_PROGRESS()
+UPDATE_PROGRESS.validate()
 
 
-input("\nDone!\nPress Enter to exit.\n")
+input("\nPress Enter to exit.\n")

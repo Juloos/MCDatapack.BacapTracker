@@ -25,8 +25,9 @@ The Python script uses a [configuration file](BacapTracker/config.json) to allow
 - `Progress bar.length` (*Integer*) : length of the progress bar, which is displayed in the sidebar's title. 40 is recommanded, a lesser value may break the indentation of other tabs.
 - `Pinned tabs` (*Array of strings*) : contains the ressource location of tabs to pin to the top of the sidebar, in order. Pinned tabs will always be on display through all pages.
 - `Tab count per page` (*Number*) : number of tabs to display per page. The last page may contain less tabs than this value. Value 0 indicates that the script must compute it.
-- `Fallback.Tab count per page` (*Integer*) : when computing the number of tabs per page, if the result is not satisfying enough according to the algorithm then this value is used instead. <u/> Must be greater than 0.</u>
 - `Page count` (*Integer*) : number of pages to generate. Value 0 indicates that the script must compute it.
+- `Fallback.Tab count per page` (*Integer*) : when computing the number of tabs per page, if the result is not satisfying enough according to the algorithm then this value is used instead. <u/> Must be greater than 0.</u>
+- `Fallback.Max page count` (*Integer*) : when computing the number of tabs per page, this value is the upper bound the algorithme should take into account. <u/> Must be greater than 0.</u>
 - `Use custom pages` (*Boolean*) : if true, the script will use the `Pages` option to generate the pages. If false, the script will compute it using the other options.
 - `Pages` (*Array of arrays*) : contains the ressource location of tabs to display on each page, where one array represents one page. Use 'BLANK' to insert a blank tab and 'PAGE_INFO' to insert the pagination tab. If `User custom pages` is set to true then this option describes the content of each page, otherwise it is ignored.
 
