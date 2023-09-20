@@ -31,7 +31,7 @@ class Progress:
         self.current_task += 1
         print("\r ", "[-]" if self.current_task <= self.nb_tasks else "[!]", self.current_task, '/', self.nb_tasks, end='')
     def validate(self):
-        print("\r ", "[o]" if self.current_task == self.nb_tasks else "[!]", self.current_task, '/', self.nb_tasks)
+        print("\r ", "[O]" if self.current_task == self.nb_tasks else "[!]", self.current_task, '/', self.nb_tasks)
 
 
 def get_blank_function():
