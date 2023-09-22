@@ -57,7 +57,7 @@ def find_best_count(key_count, slot_count):
         for s in range(1, slot_count + 1):
             if s * p == key_count and abs(s - p) < abs(couple[0] - couple[1]):
                 couple = (s, p)
-    if couple == (0, key_count):
+    if 0 in couple:
         couple = (max(CONFIG['Sidebar']['Fallback']['Tab count per page'], 1), ceil(key_count / slot_count))
     return couple
 
