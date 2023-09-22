@@ -243,12 +243,12 @@ with open(f"{FUNCTIONS_PATH}/display/refresh_scores/all.mcfunction", "w") as all
 UPDATE_PROGRESS()
 
 
-ALLF_C1 = "function bac_tracker:refresh_adv_counts/%s\n"
-ALLF_C2 = "\nfunction bac_tracker:refresh_adv_counts/total\n"
-TOTALF_C1 = "scoreboard players set @p bac_tracker.total 0\n"
-TOTALF_C2 = "scoreboard players operation @p bac_tracker.total += @p bac_tracker.%s\n"
-KEYF_C1 = "scoreboard players set @p bac_tracker.%s 0\n"
-KEYF_C2 = "execute if entity @p[advancements={%s=true}] run scoreboard players add @p bac_tracker.%s 1\n"
+ALLF_C1 = 'function bac_tracker:refresh_adv_counts/%s\n'
+ALLF_C2 = '\nfunction bac_tracker:refresh_adv_counts/total\n'
+TOTALF_C1 = 'scoreboard players set @p bac_tracker.total 0\n'
+TOTALF_C2 = 'scoreboard players operation @p bac_tracker.total += @p bac_tracker.%s\n'
+KEYF_C1 = 'scoreboard players set @p bac_tracker.%s 0\n'
+KEYF_C2 = 'execute if entity @p[advancements={%s=true}] run scoreboard players add @p bac_tracker.%s 1\n'
 with open(f"{FUNCTIONS_PATH}/refresh_adv_counts/all.mcfunction", "w") as allf:
     with open(f"{FUNCTIONS_PATH}/refresh_adv_counts/total.mcfunction", "w") as totalf:
         totalf.write(TOTALF_C1)
@@ -286,3 +286,4 @@ UPDATE_PROGRESS.validate()
 
 
 input("\nPress Enter to exit.\n")
+exit(0)
