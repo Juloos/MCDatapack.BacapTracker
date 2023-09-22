@@ -36,7 +36,7 @@
 
         "Fallback": {
             "Tab count per page": 5,
-            "Max page count": 15
+            "Max page count": 50
         },
 
         "Use custom pages": false,
