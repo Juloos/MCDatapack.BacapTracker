@@ -10,6 +10,7 @@ scoreboard objectives add UUID1 dummy
 scoreboard objectives add UUID2 dummy
 scoreboard objectives add UUID3 dummy
 scoreboard objectives add bac_tracker.leaderboard dummy
+scoreboard objectives add bac_leaderboard trigger
 scoreboard objectives add bac_tracker.playercount dummy
 forceload add 0 0
 

@@ -14,6 +14,4 @@ execute as @a[tag=!bac_tracker.flagged] at @s run scoreboard players operation @
 
 execute at @a as @e[tag=bac_tracker.leaderboard] if score @p UUID0 = @s UUID0 if score @p UUID1 = @s UUID1 if score @p UUID2 = @s UUID2 if score @p UUID3 = @s UUID3 store result entity @s Pos[0] double 0.000001 store result entity @s Pos[1] double 0 store result entity @s Pos[2] double 0 run scoreboard players get @p bac_advfirst
 
-# tag @e remove bac_tracker.visited
-# scoreboard players set playercount bac_tracker.vars 0
-# execute if entity @e[tag=bac_tracker.leaderboard] run function bac_tracker:rec/sort_players_rank
+function bac_tracker:sort_players_rank
