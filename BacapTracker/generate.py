@@ -212,7 +212,7 @@ for page in range(PAGE_COUNT):
         sidebar.append(blank())
         sidebar.append("\u00A7p")
     sidebar.reverse()
-    with open(f"{FUNCTIONS_PATH}/display/page/{page + 1}.mcfunction", "w", encoding="utf-8") as pagef:
+    with open(f"{FUNCTIONS_PATH}/display/page/{page}.mcfunction", "w", encoding="utf-8") as pagef:
         pagef.write(PAGESF_C1 % (','.join(['" "'] * (ceil(NB_BAR / 2) - 2)), page + 1, PAGE_COUNT))
         for i in range(len(sidebar) - 1, -1, -1):
             pagef.write(PAGESF_C2 % (sidebar[i], i))
