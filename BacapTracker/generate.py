@@ -279,7 +279,8 @@ if PACK_FORMAT < 8 or WAS_PRE_1_18:
 
     # There is no bac_advfirst scoreboard until BACAP 1.13.3 (pack format 8)
     # We thus remove the leaderboard feature
-    shutil.rmtree(f"{PATH}/data/bac_leaderboard/")
+    if os.path.exists(f"{PATH}/data/bac_leaderboard/"):
+        shutil.rmtree(f"{PATH}/data/bac_leaderboard/")
     UPDATE_PROGRESS()
     for filename in ("load", "tick"):
         with open(f"{PATH}/data/minecraft/tags/functions/{filename}.json", "r") as file:
