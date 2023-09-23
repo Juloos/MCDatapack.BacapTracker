@@ -3,6 +3,7 @@ import zipfile
 import glob
 from math import ceil
 import sys
+import re
 import os
 import shutil
 
@@ -138,7 +139,7 @@ else:
 
 
 print("\nGenerating datapack...")
-UPDATE_PROGRESS = Progress(1 + 1 + (NB_ADV + 1) + len(TABS_KEYS) + 1 + 2 * (len(DATA_SUM) + 1))
+UPDATE_PROGRESS = Progress(1 + 1 + (NB_ADV + 1) + len(TABS_KEYS) + 2 * (len(DATA_SUM) + 1))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 with open(f"{PATH}/pack.mcmeta", "r") as packmeta:
@@ -149,22 +150,24 @@ with open(f"{PATH}/pack.mcmeta", "w") as packmeta:
 UPDATE_PROGRESS()
 
 
-SETUPF_C = 'scoreboard objectives add bac_tracker.%s dummy\n' + \
-           'team add bac_tracker.%s\n'                        + \
-           'team modify bac_tracker.%s prefix [" "," "]\n'    + \
-           'team modify bac_tracker.%s color white\n'         + \
-           'team join bac_tracker.%s %s\n'
+SETUPF_C1 = 'scoreboard objectives add bac_tracker.%s dummy\n' + \
+            'team add bac_tracker.%s\n'                        + \
+            'team modify bac_tracker.%s prefix [" "," "]\n'    + \
+            'team modify bac_tracker.%s color white\n'         + \
+            'team join bac_tracker.%s %s\n'
+SETUPF_C2 = 'scoreboard players set page_count'
 with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "r") as setupf:
     setup = setupf.readlines()
+    WAS_PRE_1_18 = re.search("bac_tracker.", ''.join(setup)) is None
     i = 0
     while setup[i] != "###\n":
         i += 1
     i = j = i + 1
     while setup[j] != "###\n":
         j += 1
-    setup = setup[:i] + ['\n'.join(SETUPF_C % (key, key, key, key, key, CONFIG['Tabs'][key]) for key in DATA_SUM.keys())] + setup[j:]
+    setup = setup[:i] + ['\n'.join(SETUPF_C1 % (key, key, key, key, key, CONFIG['Tabs'][key]) for key in DATA_SUM.keys())] + setup[j:]
 with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "w") as setupf:
-    setupf.write(''.join(setup))
+    setupf.write(''.join((f"{SETUPF_C2} bac_tracker.vars {PAGE_COUNT}\n" if line.startswith(SETUPF_C2) else line) for line in setup))
 UPDATE_PROGRESS()
 
 
@@ -218,13 +221,6 @@ for page in range(PAGE_COUNT):
         for i in range(len(sidebar) - 1, -1, -1):
             pagef.write(PAGESF_C2 % (sidebar[i], i))
 
-SETUPF_C = 'scoreboard players set page_count'
-with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "r", encoding="utf-8") as setupf:
-    setup = setupf.readlines()
-with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "w", encoding="utf-8") as setupf:
-    setupf.write(''.join((f"{SETUPF_C} bac_tracker.vars {PAGE_COUNT}\n" if line.startswith(SETUPF_C) else line) for line in setup))
-UPDATE_PROGRESS()
-
 
 ALLF_C1 = 'function bac_tracker:display/refresh_scores/%s\n'
 KEYF_C1 = 'execute if score @p bac_tracker.%s matches %s run team modify bac_tracker.%s suffix [{"text":": ","color":"gray"},{"text":"%s","color":"yellow"},{"text":"/","color":"gold"},{"text":"%s","color":"yellow"}]\n'
@@ -268,8 +264,8 @@ UPDATE_PROGRESS()
 UPDATE_PROGRESS.validate()
 
 
-if PACK_FORMAT < 8:
-    print("\nModifying datapack for pre-1.18 compatibility...")
+if PACK_FORMAT < 8 or WAS_PRE_1_18:
+    print("\nModifying datapack for pre-1.18 compatibility... " + (WAS_PRE_1_18 and PACK_FORMAT >= 8) * "(was previously generated with pre-1.18)")
     files = glob.glob(f"{FUNCTIONS_PATH}/**/*.mcfunction", recursive=True)
     UPDATE_PROGRESS = Progress(len(files) + 3)
 
