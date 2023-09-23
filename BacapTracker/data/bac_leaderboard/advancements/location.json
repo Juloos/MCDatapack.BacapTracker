@@ -5,6 +5,6 @@
         }
     },
     "rewards": {
-        "function": "bac_tracker:location/update_scoreboard"
+        "function": "bac_leaderboard:location/update_leaderboard"
     }
 }

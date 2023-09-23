@@ -1,5 +1,6 @@
 {
     "values": [
+        "bac_leaderboard:load/setup",
         "bac_tracker:load/setup"
     ]
 }

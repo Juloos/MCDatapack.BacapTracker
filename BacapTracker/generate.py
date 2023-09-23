@@ -4,6 +4,7 @@ import glob
 from math import ceil
 import sys
 import os
+import shutil
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 CONFIG = json.load(open(f"{PATH}/config.json", "r"))
@@ -267,22 +268,32 @@ UPDATE_PROGRESS()
 UPDATE_PROGRESS.validate()
 
 
-if PACK_FORMAT >= 8:
-    input("\nPress Enter to exit.\n")
-    exit(0)
+if PACK_FORMAT < 8:
+    print("\nModifying datapack for pre-1.18 compatibility...")
+    files = glob.glob(f"{FUNCTIONS_PATH}/**/*.mcfunction", recursive=True)
+    UPDATE_PROGRESS = Progress(len(files) + 3)
 
+    for filename in files:
+        filename = filename.replace('\\', '/')
+        with open(filename, "r") as file:
+            content = file.read()
+        with open(filename, "w") as file:
+            file.write(content.replace("bac_tracker.", ''))
+        UPDATE_PROGRESS()
 
-print("\nModifying datapack for pre-1.18 compatibility...")
-files = glob.glob(f"{FUNCTIONS_PATH}/**/*.mcfunction", recursive=True)
-UPDATE_PROGRESS = Progress(len(files))
-for filename in files:
-    filename = filename.replace('\\', '/')
-    with open(filename, "r") as file:
-        content = file.read()
-    with open(filename, "w") as file:
-        file.write(content.replace("bac_tracker.", ''))
+    # There is no bac_advfirst scoreboard until BACAP 1.13.3 (pack format 8)
+    # We thus remove the leaderboard feature
+    shutil.rmtree(f"{PATH}/data/bac_leaderboard/")
     UPDATE_PROGRESS()
-UPDATE_PROGRESS.validate()
+    for filename in ("load", "tick"):
+        with open(f"{PATH}/data/minecraft/tags/functions/{filename}.json", "r") as file:
+            filejson = json.load(file)
+        filejson['values'] = [val for val in filejson['values'] if not val.startswith("bac_leaderboard:")]
+        with open(f"{PATH}/data/minecraft/tags/functions/{filename}.json", "w") as file:
+            json.dump(filejson, file, indent=4)
+        UPDATE_PROGRESS()
+
+    UPDATE_PROGRESS.validate()
 
 
 input("\nPress Enter to exit.\n")

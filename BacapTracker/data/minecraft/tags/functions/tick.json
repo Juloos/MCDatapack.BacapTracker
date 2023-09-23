@@ -1,6 +1,6 @@
 {
     "values": [
-        "bac_tracker:tick/refresh_page_increment",
-        "bac_tracker:tick/trigger/bac_leaderboard"
+        "bac_leaderboard:tick/trigger_leaderboard",
+        "bac_tracker:tick/refresh_page_increment"
     ]
 }

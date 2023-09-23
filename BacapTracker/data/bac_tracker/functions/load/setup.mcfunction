@@ -5,15 +5,6 @@ scoreboard players set page_count bac_tracker.vars 3
 execute unless score page_increment bac_tracker.vars = page_increment bac_tracker.vars run scoreboard players set page_increment bac_tracker.vars 200
 scoreboard players set page_increment_count bac_tracker.vars 0
 
-scoreboard objectives add UUID0 dummy
-scoreboard objectives add UUID1 dummy
-scoreboard objectives add UUID2 dummy
-scoreboard objectives add UUID3 dummy
-scoreboard objectives add bac_tracker.leaderboard dummy
-scoreboard objectives add bac_leaderboard trigger
-scoreboard objectives add bac_tracker.playercount dummy
-forceload add 0 0
-
 scoreboard objectives add bac_tracker.progress_score dummy
 scoreboard objectives setdisplay sidebar bac_tracker.progress_score
 
