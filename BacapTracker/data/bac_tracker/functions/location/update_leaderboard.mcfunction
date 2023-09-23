@@ -1,3 +1,5 @@
+execute as @a unless score @s bac_advfirst = @s bac_advfirst run scoreboard players set @s bac_advfirst 0
+
 execute as @a store result score @s UUID0 run data get entity @s UUID[0]
 execute as @a store result score @s UUID1 run data get entity @s UUID[1]
 execute as @a store result score @s UUID2 run data get entity @s UUID[2]
