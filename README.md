@@ -3,6 +3,24 @@ A generic Minecraft Datapack for tracking BlazeandCave's Advancements Pack (BACA
 
 For Minecraft 1.13 to 1.20 and more, non-Cooperative Mode in multiplayer and Terralith version of BACAP are not supported.
 
+# Features
+- Tracks the progress of all tabs and milestones of BACAP.
+- Displays the progress of the current tab in the sidebar.
+- Highly customizable pagination system.
+- Maintains a leaderboard that ranks the "First Advancements" score of players.
+
+# In-game
+
+### Screenshots
+
+![In-game screenshot of the progress sidebar](./images/sidebar.png)
+![In-game screenshot of the leaderboard](./images/leaderboard.png)
+
+### Commands
+
+- Use `/trigger bac_leaderboard` to see the ranking of "First Advancements".
+- Use `/scoreboard players set page_increment [bac_tracker.]vars XXX` to change the time (in ticks) between each page flip. `bac_tracker.` may or may not be present depending on you Minecraft version.
+
 # Installation
 See [this tutorial](https://minecraft.fandom.com/wiki/Tutorials/Installing_a_data_pack) for installing the datapack to your minecraft world.
 If downloaded from source code, you need to generate the datapack using the included Python script before installing it.
