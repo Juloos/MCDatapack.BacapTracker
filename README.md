@@ -47,7 +47,7 @@ The Python script uses a [configuration file](BacapTracker/config.json) to allow
 - `Fallback.Tab count per page` (*Integer*) : when computing the number of tabs per page, if the result is not satisfying enough according to the algorithm then this value is used instead. <u/> Must be greater than 0.</u>
 - `Fallback.Max page count` (*Integer*) : when computing the number of tabs per page, this value is the upper bound the algorithme should take into account. <u/> Must be greater than 0.</u>
 - `Use custom pages` (*Boolean*) : if true, the script will use the `Pages` option to generate the pages. If false, the script will compute it using the other options.
-- `Pages` (*Array of arrays*) : contains the ressource location of tabs to display on each page, where one array represents one page. Use 'BLANK' to insert a blank tab and 'PAGE_INFO' to insert the pagination tab. If `User custom pages` is set to true then this option describes the content of each page, otherwise it is ignored.
+- `Pages` (*Array of arrays*) : contains the ressource location of tabs to display on each page, where one array represents one page. Use 'BLANK' to insert a blank tab and 'PAGE_INFO' to insert the pagination tab. If `Use custom pages` is set to true then this option describes the content of each page, otherwise it is ignored.
 
 # References
 BlazeandCave's Advancements Pack: https://www.planetminecraft.com/data-pack/blazeandcave-s-advancements-pack-1-12/
