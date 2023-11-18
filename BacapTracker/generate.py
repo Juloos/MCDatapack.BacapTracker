@@ -290,6 +290,8 @@ if PACK_FORMAT < 8 or WAS_PRE_1_18:
             json.dump(filejson, file, indent=4)
         UPDATE_PROGRESS()
 
+    # TODO: teams (starting from 1.13.3, pack format 8)
+
     UPDATE_PROGRESS.validate()
 
 
