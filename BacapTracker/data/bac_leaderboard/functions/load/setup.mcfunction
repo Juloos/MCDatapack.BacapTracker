@@ -1,4 +1,7 @@
 scoreboard objectives add bac_leaderboard.vars dummy
+scoreboard players set update bac_leaderboard.vars 0
+# if unset: set to 20 (1 second)
+execute unless score update_increment bac_leaderboard.vars = update_increment bac_leaderboard.vars run scoreboard players set update_increment bac_leaderboard.vars 20
 
 scoreboard objectives add bac_leaderboard trigger
 scoreboard objectives add bac_leaderboard.UUID0 dummy

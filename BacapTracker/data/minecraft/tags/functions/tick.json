@@ -1,6 +1,8 @@
 {
     "values": [
+        "bac_leaderboard:tick/update_leaderboard_count",
         "bac_leaderboard:tick/trigger_leaderboard",
+        "bac_tracker:tick/update_scoreboard",
         "bac_tracker:tick/refresh_page_increment"
     ]
 }

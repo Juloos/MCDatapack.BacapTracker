@@ -1,7 +1,10 @@
 scoreboard objectives add bac_tracker.vars dummy
+scoreboard players set update bac_tracker.vars 0
+# if unset: set to 20 (1 second)
+execute unless score update_increment bac_tracker.vars = update_increment bac_tracker.vars run scoreboard players set update_increment bac_tracker.vars 20
 scoreboard players set page bac_tracker.vars 0
 scoreboard players set page_count bac_tracker.vars 3
-# if unset: set to 200 (10 secondes)
+# if unset: set to 200 (10 seconds)
 execute unless score page_increment bac_tracker.vars = page_increment bac_tracker.vars run scoreboard players set page_increment bac_tracker.vars 200
 scoreboard players set page_increment_count bac_tracker.vars 0
 
