@@ -1,4 +1,4 @@
-function bac_tracker:location/update_scoreboard
+function bac_tracker:update_scoreboard
 
 function bac_tracker:display/reset
 execute if score page bac_tracker.vars matches 0 run function bac_tracker:display/page/0

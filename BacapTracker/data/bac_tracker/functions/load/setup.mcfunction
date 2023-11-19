@@ -37,5 +37,4 @@ team leave §8
 team leave §9
 
 
-advancement revoke @a only bac_tracker:location
 function bac_tracker:display/refresh_page
