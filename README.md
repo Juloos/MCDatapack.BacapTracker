@@ -1,7 +1,17 @@
 # MCDatapack.BacapTracker
 A generic Minecraft Datapack for tracking BlazeandCave's Advancements Pack (BACAP) with a fancy Scoreboard.
 
-For Minecraft 1.13 to 1.20 and more, non-Cooperative Mode in multiplayer and Terralith version of BACAP are not supported.
+For Minecraft 1.13 to 1.20 and more.
+
+# Supported versions of BACAP
+- :heavy_check_mark: Singleplayer
+- :arrow_forward: Multiplayer:
+    - :x: No Cooperative Mode
+    - :heavy_check_mark: Normal Cooperative Mode
+    - :x: Team Cooperative Mode
+- :x: Hardcore Version
+- :x: Terralith Version
+- :x: Infinity Snapshot Challenge
 
 # Features
 - Tracks the progress of all tabs and milestones of BACAP.
