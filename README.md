@@ -17,7 +17,7 @@ For Minecraft 1.13 to 1.20 and more.
 - Tracks the progress of all tabs and milestones of BACAP.
 - Displays the progress of the current tab in the sidebar.
 - Highly customizable pagination system.
-- Maintains a leaderboard that ranks the "First Advancements" score of players.
+- Only for 1.18+: Maintains a leaderboard that ranks the "First Advancements" score of players.
 
 # In-game
 
@@ -29,7 +29,9 @@ For Minecraft 1.13 to 1.20 and more.
 ### Commands
 
 - Use `/trigger bac_leaderboard` to see the ranking of "First Advancements".
-- Use `/scoreboard players set page_increment [bac_tracker.]vars XXX` to change the time (in ticks) between each page flip. `bac_tracker.` may or may not be present depending on you Minecraft version.
+- Use `/scoreboard players set page_increment [bac_tracker.]vars XXX` to change the time (in ticks) between each page flip, defaults to 200. `bac_tracker.` may or may not be present depending on you Minecraft version.
+- Use `/scoreboard players set update_increment [bac_tracker.]vars XXX` to change the time (in ticks) between each update of the scores, defaults to 20. You may increase this number if you experience tick latency.
+- Use `/scoreboard players set update_increment bac_leaderboard.vars XXX` to change the time (in ticks) between each update of the ranking, defaults to 20. Particularly tick-intensive if many players are connected, you may increase this number if you experience tick latency.
 
 # Installation
 See [this tutorial](https://minecraft.fandom.com/wiki/Tutorials/Installing_a_data_pack) for installing the datapack to your minecraft world.
