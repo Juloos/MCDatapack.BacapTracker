@@ -35,14 +35,16 @@ For Minecraft 1.13 to 1.20 and more.
 
 # Installation
 See [this tutorial](https://minecraft.fandom.com/wiki/Tutorials/Installing_a_data_pack) for installing the datapack to your minecraft world.
-If downloaded from source code, you need to generate the datapack using the included Python script before installing it.
+If downloaded from source code, you need to generate the datapack using the included Python script before installing it. Otherwise if it was downloaded from the [release tab](https://github.com/Juloos/MCDatapack.BacapTracker/releases) then nothing has to be done, it is already generated.
 
 # Requirements
 [Python 3](https://www.python.org/) is required if you want to generate the datapack.
 
 # Usage
 
-    python3 ./BacapTracker/generate.py [<path_to_bacap>]
+    python3 ./BacapTracker/generate.py* [<path_to_bacap>]
+
+_\* you can simply double-click the file on Windows._
 
 The path must lead to a BACAP datapack directory or zip file, both ways must be the direct parent of `data` inside BACAP.
 
