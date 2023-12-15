@@ -9,6 +9,7 @@ import shutil
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 CONFIG = json.load(open(f"{PATH}/config.json", "r"))
+CONTEXTS = json.load(open(f"{PATH}/category_contexts.json", "r"))
 
 # Config validation
 err = None
@@ -88,7 +89,9 @@ NB_BAR = CONFIG['Sidebar']['Progress bar']['length']
 print(f"\nExctracting data from BACAP (pack format {PACK_FORMAT})...")
 AA = list()
 for line in aafile.readlines():
-    line2 = line.removeprefix("execute as @a[advancements={")  # Terralith version is ignored
+    line2 = line.removeprefix("execute as @a[advancements={")
+    if CONFIG['Terralith']:
+        line2 = line2.removeprefix("execute if score terralith_score bac_settings matches 1 as @a[advancements={")
     if line != line2:
         index = line2.find("=true}]")
         if index != -1:
@@ -101,10 +104,16 @@ UPDATE_PROGRESS = Progress(NB_ADV)
 for advancement in AA:
     current = advancement
     while not current.startswith("blazeandcave:"):
-        if BACAP_ZIP is not None:
-            jsonLike = zipfile.Path(BACAP_ZIP, at=f"data/{current.replace(':', '/advancements/')}.json").open(encoding="utf-8")
-        else:
-            jsonLike = open(f"{BACAP_PATH}/data/{current.replace(':', '/advancements/')}.json", 'r')
+        try:
+            if BACAP_ZIP is not None:
+                jsonLike = zipfile.Path(BACAP_ZIP, at=f"data/{current.replace(':', '/advancements/')}.json").open(encoding="utf-8")
+            else:
+                jsonLike = open(f"{BACAP_PATH}/data/{current.replace(':', '/advancements/')}.json", 'r')
+        except FileNotFoundError:
+            if current in CONTEXTS:
+                current = "blazeandcave:" + CONTEXTS[current]
+                break
+            raise FileNotFoundError(f"Could not find '{current}' in BACAP")
         jsonData = json.load(jsonLike)
         if 'parent' in jsonData:
             current = jsonData["parent"]

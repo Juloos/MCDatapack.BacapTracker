@@ -21,6 +21,8 @@
         "weaponry": "Weaponry"
     },
 
+    "Terralith": false,
+
     "Sidebar": {
         "Progress bar": {
             "length": 40
