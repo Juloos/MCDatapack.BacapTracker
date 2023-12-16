@@ -54,8 +54,8 @@ Dragging the file onto `generate.py` in Windows will have the same effect. If no
 The Python script uses a [configuration file](BacapTracker/config.json) to allow customization of the generated datapack. Here is a list of the available options and their meaning:
 - `Tabs` : translates the BACAP ressource location of tabs into human-friendly names. Use this to localize the names into your language. You shall only modify the names and not the ressource location, <u/>names must exclude space characters.</u>
 - `Terralith` (*Boolean*) : if true, the script will take into account Terralith-related advancements for a three compatibility with Terralith, Nullscape and Amplified Nether. <u/>No need to provide the compatibility datapack of BACAP, the script still only uses the main datapack to generate.</u>
+- `Hidden advancements` (*Boolean*) : if true, the script will take into account the hidden advancements of the different tabs.
 - `Sidebar` : contains the following options, related to the scoreboard's sidebar.
-- `Count hidden advancements` (*Boolean*) : if true, the script will take into account the hidden advancements of the different tabs.
 - `Progress bar.length` (*Integer*) : length of the progress bar, which is displayed in the sidebar's title. 40 is recommanded, a lesser value may break the indentation of other tabs.
 - `Pinned tabs` (*Array of strings*) : contains the ressource location of tabs to pin to the top of the sidebar, in order. Pinned tabs will always be on display through all pages.
 - `Tab count per page` (*Integer*) : number of tabs to display per page. The last page may contain less tabs than this value. Value 0 indicates that the script must compute it.

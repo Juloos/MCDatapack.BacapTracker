@@ -91,7 +91,7 @@ DATA: dict = {'hidden': list()}
 AA = list()
 for line in aafile.readlines():
     is_hidden = False
-    if CONFIG['Count hidden advancements'] and line.startswith("#execute"):
+    if line.startswith("#execute"):
         line = line.removeprefix('#')
         is_hidden = True
     line2 = line.removeprefix("execute as @a[advancements={")
@@ -141,10 +141,10 @@ if BACAP_ZIP is not None:
     BACAP_ZIP.close()
 
 DATA_SUM = {key: len(value) for key, value in DATA.items()}
-DATA_SUM['total'] = sum(DATA_SUM.values())
+DATA_SUM['total'] = sum(DATA_SUM.values()) - (DATA_SUM['hidden'] * (not CONFIG['Hidden advancements']))
 if not CONFIG['Sidebar']['Use custom pages']:
     PINNED_KEYS = CONFIG['Sidebar']['Pinned tabs']
-    TABS_KEYS = sorted(set(DATA_SUM.keys()).difference(PINNED_KEYS))
+    TABS_KEYS = sorted(set(DATA_SUM.keys()).difference(PINNED_KEYS, {"hidden"} if not CONFIG['Hidden advancements'] else set()))
     PINNED_KEYS = sorted(set(PINNED_KEYS).intersection(DATA_SUM.keys()), key=lambda k: PINNED_KEYS.index(k))
     SLOT_COUNT = 15 - (3 + 1 + len(PINNED_KEYS))
     KEY_COUNT, PAGE_COUNT = find_best_count(len(TABS_KEYS), SLOT_COUNT)
@@ -268,7 +268,8 @@ with open(f"{FUNCTIONS_PATH}/refresh_adv_counts/all.mcfunction", "w") as allf:
         UPDATE_PROGRESS()
         for key, value in DATA.items():
             allf.write(ALLF_C1 % key)
-            totalf.write(TOTALF_C2 % key)
+            if key != 'hidden' or not CONFIG['Hidden advancements']:
+                totalf.write(TOTALF_C2 % key)
             with open(f"{FUNCTIONS_PATH}/refresh_adv_counts/{key}.mcfunction", "w") as keyf:
                 keyf.write(f"# Total: {len(value)}\n")
                 keyf.write(KEYF_C1 % key)
