@@ -87,18 +87,25 @@ except FileNotFoundError:
 NB_BAR = CONFIG['Sidebar']['Progress bar']['length']
 
 print(f"\nExctracting data from BACAP (pack format {PACK_FORMAT})...")
+DATA: dict = {'hidden': list()}
 AA = list()
 for line in aafile.readlines():
+    is_hidden = False
+    if CONFIG['Count hidden advancements'] and line.startswith("#execute"):
+        line = line.removeprefix('#')
+        is_hidden = True
     line2 = line.removeprefix("execute as @a[advancements={")
     if CONFIG['Terralith']:
         line2 = line2.removeprefix("execute if score terralith_score bac_settings matches 1 as @a[advancements={")
     if line != line2:
         index = line2.find("=true}]")
         if index != -1:
-            AA.append(line2[:index])
+            if not is_hidden:
+                AA.append(line2[:index])
+            else:
+                DATA['hidden'].append(line2[:index])
 aafile.close()
 
-DATA = dict()
 NB_ADV = len(AA)
 UPDATE_PROGRESS = Progress(NB_ADV)
 for advancement in AA:

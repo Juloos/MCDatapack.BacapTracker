@@ -1,6 +1,7 @@
 {
     "Tabs": {
         "total": "Total",
+        "hidden": "Hidden",
         "adventure": "Adventure",
         "animal": "Animal",
         "bacap": "Milestones",
@@ -24,6 +25,8 @@
     "Terralith": false,
 
     "Sidebar": {
+        "Count hidden advancements": false,
+
         "Progress bar": {
             "length": 40
         },
