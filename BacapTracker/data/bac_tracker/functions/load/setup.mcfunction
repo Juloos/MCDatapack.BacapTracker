@@ -17,8 +17,9 @@ scoreboard objectives setdisplay sidebar bac_tracker.progress_score
 # team modify bac_tracker.milestone prefix [" "," "]
 # team modify bac_tracker.milestone color white
 # team join bac_tracker.milestone Milestone
-###
-###
+
+## setup_categories {
+## }
 
 
 team add bac_tracker.page

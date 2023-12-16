@@ -169,10 +169,10 @@ with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "r") as setupf:
     setup = setupf.readlines()
     WAS_PRE_1_18 = re.search("bac_tracker.", ''.join(setup)) is None
     i = 0
-    while setup[i] != "###\n":
+    while setup[i] != "## setup_categories {\n":
         i += 1
     i = j = i + 1
-    while setup[j] != "###\n":
+    while setup[j] != "## }\n":
         j += 1
     setup = setup[:i] + ['\n'.join(SETUPF_C1 % (key, key, key, key, key, CONFIG['Tabs'][key]) for key in DATA_SUM.keys())] + setup[j:]
 with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "w") as setupf:
@@ -180,7 +180,7 @@ with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "w") as setupf:
 UPDATE_PROGRESS()
 
 
-PROGRESSF_C = 'execute if score @p bac_tracker.total matches %s run scoreboard objectives modify bac_tracker.progress_score displayname [" "," "," ","[",{"text":"%s","color":"green"},{"text":"%s","color":"gray"},"]",{"text":" - ","color":"gray"},{"text":"%s%%","color":"light_purple"}," "," "," "]\n'
+PROGRESSF_C = 'execute if score any bac_tracker.total matches %s run scoreboard objectives modify bac_tracker.progress_score displayname [" "," "," ","[",{"text":"%s","color":"green"},{"text":"%s","color":"gray"},"]",{"text":" - ","color":"gray"},{"text":"%s%%","color":"light_purple"}," "," "," "]\n'
 with open(f"{FUNCTIONS_PATH}/display/progress_bar.mcfunction", "w") as progressf:
     for i in range(NB_ADV + 1):
         nb_greens = i * NB_BAR // NB_ADV
@@ -232,9 +232,9 @@ for page in range(PAGE_COUNT):
 
 
 ALLF_C1 = 'function bac_tracker:display/refresh_scores/%s\n'
-KEYF_C1 = 'execute if score @p bac_tracker.%s matches %s run team modify bac_tracker.%s suffix [{"text":": ","color":"gray"},{"text":"%s","color":"yellow"},{"text":"/","color":"gold"},{"text":"%s","color":"yellow"}]\n'
-KEYF_C2 = '\nexecute if score @p bac_tracker.%s matches %s.. run team modify bac_tracker.%s color green\n'
-KEYF_C3 = 'execute unless score @p bac_tracker.%s matches %s.. run team modify bac_tracker.%s color white\n'
+KEYF_C1 = 'execute if score any bac_tracker.%s matches %s run team modify bac_tracker.%s suffix [{"text":": ","color":"gray"},{"text":"%s","color":"yellow"},{"text":"/","color":"gold"},{"text":"%s","color":"yellow"}]\n'
+KEYF_C2 = '\nexecute if score any bac_tracker.%s matches %s.. run team modify bac_tracker.%s color green\n'
+KEYF_C3 = 'execute unless score any bac_tracker.%s matches %s.. run team modify bac_tracker.%s color white\n'
 with open(f"{FUNCTIONS_PATH}/display/refresh_scores/all.mcfunction", "w") as allf:
     for key, value in DATA_SUM.items():
         if key != 'total':
@@ -251,10 +251,10 @@ UPDATE_PROGRESS()
 
 ALLF_C1 = 'function bac_tracker:refresh_adv_counts/%s\n'
 ALLF_C2 = '\nfunction bac_tracker:refresh_adv_counts/total\n'
-TOTALF_C1 = 'scoreboard players set @p bac_tracker.total 0\n'
-TOTALF_C2 = 'scoreboard players operation @p bac_tracker.total += @p bac_tracker.%s\n'
-KEYF_C1 = 'scoreboard players set @p bac_tracker.%s 0\n'
-KEYF_C2 = 'execute if entity @p[advancements={%s=true}] run scoreboard players add @p bac_tracker.%s 1\n'
+TOTALF_C1 = 'scoreboard players set any bac_tracker.total 0\n'
+TOTALF_C2 = 'scoreboard players operation any bac_tracker.total += any bac_tracker.%s\n'
+KEYF_C1 = 'scoreboard players set any bac_tracker.%s 0\n'
+KEYF_C2 = 'execute if entity @a[advancements={%s=true}] run scoreboard players add any bac_tracker.%s 1\n'
 with open(f"{FUNCTIONS_PATH}/refresh_adv_counts/all.mcfunction", "w") as allf:
     with open(f"{FUNCTIONS_PATH}/refresh_adv_counts/total.mcfunction", "w") as totalf:
         totalf.write(TOTALF_C1)
