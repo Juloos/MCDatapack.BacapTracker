@@ -8,7 +8,7 @@ For Minecraft 1.13 to 1.20 and more.
 - :arrow_forward: Multiplayer
     - :x: Without Cooperative Mode
     - :heavy_check_mark: With Normal Cooperative Mode
-    - :construction: With Team Cooperative Mode
+    - :x: With Team Cooperative Mode
 - :heavy_check_mark: Hardcore Version
 - :heavy_check_mark: Terralith Version
 - :x: Infinity Snapshot Challenge
