@@ -1,0 +1,19 @@
+function bac_tracker:refresh_adv_counts/hidden
+function bac_tracker:refresh_adv_counts/adventure
+function bac_tracker:refresh_adv_counts/animal
+function bac_tracker:refresh_adv_counts/farming
+function bac_tracker:refresh_adv_counts/bacap
+function bac_tracker:refresh_adv_counts/biomes
+function bac_tracker:refresh_adv_counts/challenges
+function bac_tracker:refresh_adv_counts/building
+function bac_tracker:refresh_adv_counts/monsters
+function bac_tracker:refresh_adv_counts/enchanting
+function bac_tracker:refresh_adv_counts/end
+function bac_tracker:refresh_adv_counts/potion
+function bac_tracker:refresh_adv_counts/mining
+function bac_tracker:refresh_adv_counts/nether
+function bac_tracker:refresh_adv_counts/redstone
+function bac_tracker:refresh_adv_counts/weaponry
+function bac_tracker:refresh_adv_counts/statistics
+
+function bac_tracker:refresh_adv_counts/total

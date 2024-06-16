@@ -66,18 +66,26 @@ def find_best_count(key_count, slot_count):
 
 
 PACK_FORMAT = 4  # pack format compatibility with BACAP & MC starts at the 1.13.2 release
-FUNCTIONS_PATH = f"{PATH}/data/bac_tracker/functions"
+
+# MC 1.21 Port by tjthings
+FUNCTIONS = "function" # starting in Minecraft 1.21, functions directory renamed to function
+ADVANCEMENTS = "advancement" # starting in Minecraft 1.21, advancements directory renamed to just advancement
+
 BACAP_PATH = (input("Enter the path to a BACAP folder or zip\n> ") if len(sys.argv) < 2 else sys.argv[1]).replace('\\', '/').removesuffix('/')
 BACAP_ZIP = None
+
 if BACAP_PATH.endswith(".zip"):
     BACAP_ZIP = zipfile.ZipFile(BACAP_PATH, "r")
 try:
     if BACAP_ZIP is not None:
-        aafile = zipfile.Path(BACAP_ZIP, at="data/bc_rewards/functions/update_score.mcfunction").open(encoding="utf-8")
         with BACAP_ZIP.open("pack.mcmeta", "r") as packmeta:
             PACK_FORMAT = json.load(packmeta)["pack"]["pack_format"]
+            if PACK_FORMAT < 48: # Backwards compatibility with Minecraft 1.20 and below
+                FUNCTIONS = "functions"
+                ADVANCEMENTS = "advancements"
+        aafile = zipfile.Path(BACAP_ZIP, at=f"data/bc_rewards/{FUNCTIONS}/update_score.mcfunction").open(encoding="utf-8")
     else:
-        aafile = open(f"{BACAP_PATH}/data/bc_rewards/functions/update_score.mcfunction", "r")
+        aafile = open(f"{BACAP_PATH}/data/bc_rewards/{FUNCTIONS}/update_score.mcfunction", "r")
         with open(f"{BACAP_PATH}/pack.mcmeta", "r") as packmeta:
             PACK_FORMAT = json.load(packmeta)["pack"]["pack_format"]
 except FileNotFoundError:
@@ -85,6 +93,8 @@ except FileNotFoundError:
     input("Press Enter to exit.\n")
     exit(1)
 NB_BAR = CONFIG['Sidebar']['Progress bar']['length']
+
+FUNCTIONS_PATH = f"{PATH}/data/bac_tracker/{FUNCTIONS}"
 
 print(f"\nExctracting data from BACAP (pack format {PACK_FORMAT})...")
 DATA: dict = {'hidden': list()}
@@ -113,9 +123,9 @@ for advancement in AA:
     while not current.startswith("blazeandcave:"):
         try:
             if BACAP_ZIP is not None:
-                jsonLike = zipfile.Path(BACAP_ZIP, at=f"data/{current.replace(':', '/advancements/')}.json").open(encoding="utf-8")
+                jsonLike = zipfile.Path(BACAP_ZIP, at=f"data/{current.replace(':', f'/{ADVANCEMENTS}/')}.json").open(encoding="utf-8")
             else:
-                jsonLike = open(f"{BACAP_PATH}/data/{current.replace(':', '/advancements/')}.json", 'r')
+                jsonLike = open(f"{BACAP_PATH}/data/{current.replace(':', f'/{ADVANCEMENTS}/')}.json", 'r')
         except FileNotFoundError:
             if current in CONTEXTS:
                 current = "blazeandcave:" + CONTEXTS[current]
@@ -172,6 +182,7 @@ SETUPF_C1 = 'scoreboard objectives add bac_tracker.%s dummy\n' + \
             'team modify bac_tracker.%s color white\n'         + \
             'team join bac_tracker.%s %s\n'
 SETUPF_C2 = 'scoreboard players set page_count'
+
 with open(f"{FUNCTIONS_PATH}/load/setup.mcfunction", "r") as setupf:
     setup = setupf.readlines()
     WAS_PRE_1_18 = re.search("bac_tracker.", ''.join(setup)) is None
@@ -300,10 +311,10 @@ if PACK_FORMAT < 8 or WAS_PRE_1_18:
         shutil.rmtree(f"{PATH}/data/bac_leaderboard/")
     UPDATE_PROGRESS()
     for filename in ("load", "tick"):
-        with open(f"{PATH}/data/minecraft/tags/functions/{filename}.json", "r") as file:
+        with open(f"{PATH}/data/minecraft/tags/{FUNCTIONS}/{filename}.json", "r") as file:
             filejson = json.load(file)
         filejson['values'] = [val for val in filejson['values'] if not val.startswith("bac_leaderboard:")]
-        with open(f"{PATH}/data/minecraft/tags/functions/{filename}.json", "w") as file:
+        with open(f"{PATH}/data/minecraft/tags/{FUNCTIONS}/{filename}.json", "w") as file:
             json.dump(filejson, file, indent=4)
         UPDATE_PROGRESS()
 
