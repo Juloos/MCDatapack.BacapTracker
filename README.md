@@ -3,6 +3,8 @@ A generic Minecraft Datapack for tracking BlazeandCave's Advancements Pack (BACA
 
 For Minecraft 1.13 to 1.20 and more.
 
+⚠️ This project is now inactive, consider [this one](https://github.com/Juloos/MCDatapack.BetterBacap) for newer versions of Minecraft.
+
 # Supported versions of BACAP
 - :heavy_check_mark: Singleplayer
 - :arrow_forward: Multiplayer
